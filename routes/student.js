@@ -17,12 +17,24 @@ router.get('/', function(req, res, next) {
   );
 });
 
+router.post('/', async (req, res, next) => {
+  try {
+    // How to find what is coming in from the req.body (from the form)? Look at the Student model for what's inside (the column attributes)
+    const { firstName, lastName, email } = req.body; // Extract only necessary data from body for security
+    const student = await Student.create({ firstName, lastName, email }); // to get back the new ID
+    //res.send will send Text res.json will send json
+    res.status(201).json(student); // Why 201? 201 is the created status
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.put('/:id', function(req, res, next) {
   Student.update(req.body, {
     where: {
-      id: req.params.id,
+      id: req.params.id
     },
-    returning: true,
+    returning: true
   })
     .then(test => res.status(201).json(test[1][0]))
     .catch(next);
@@ -31,8 +43,8 @@ router.put('/:id', function(req, res, next) {
 router.delete('/:id', function(req, res, next) {
   Student.destroy({
     where: {
-      id: req.params.id,
-    },
+      id: req.params.id
+    }
   })
     .then(() => {
       res.sendStatus(204);
